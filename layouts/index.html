@@ -1539,12 +1539,28 @@
                 if (cat && cat.enabled === false) return;
                 const categoryTitle = pickLangValue(cat.category || '', cat.category_ar || '');
                 const catCases = Array.isArray(cat.cases) ? cat.cases : [];
+                
+                // Track titles to add numbering for duplicates
+                const titleCounts = {};
+                
                 catCases.forEach(c => {
+                    const title = pickLangValue(c.alt || '', c.alt_ar || '');
+                    const description = pickLangValue(c.description || '', c.description_ar || '');
+                    
+                    // Count occurrences of this title
+                    titleCounts[title] = (titleCounts[title] || 0) + 1;
+                    
+                    // If this title appears multiple times, add case number
+                    let finalTitle = title;
+                    if (titleCounts[title] > 1) {
+                        finalTitle = `${title} (Case ${titleCounts[title]})`;
+                    }
+                    
                     flat.push({
                         categoryTitle,
                         photo: c.photo || '',
-                        title: pickLangValue(c.alt || '', c.alt_ar || ''),
-                        description: pickLangValue(c.description || '', c.description_ar || '')
+                        title: finalTitle,
+                        description: description
                     });
                 });
             });
