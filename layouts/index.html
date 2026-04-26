@@ -1536,9 +1536,6 @@
             const casesRaw = cvData.clinicalCases;
             const cases = Array.isArray(casesRaw) ? casesRaw : [];
             
-            // Track unique titles across ALL categories to avoid duplicates
-            const seenTitles = new Set();
-            
             console.log('Processing clinical cases...');
             
             cases.forEach(cat => {
@@ -1554,25 +1551,36 @@
                     
                     console.log(`Processing case: "${title}"`);
                     
-                    // Only add if we haven't seen this title before
-                    if (!seenTitles.has(title)) {
-                        console.log(`Adding new case: "${title}"`);
-                        seenTitles.add(title);
-                        
-                        flat.push({
-                            categoryTitle,
-                            photo: c.photo || '',
-                            title: title,
-                            description: description
-                        });
-                    } else {
-                        console.log(`Skipping duplicate case: "${title}"`);
-                    }
+                    flat.push({
+                        categoryTitle,
+                        photo: c.photo || '',
+                        title: title,
+                        description: description
+                    });
                 });
             });
             
-            console.log(`Final flat list has ${flat.length} cases:`, flat.map(f => f.title));
-            return flat;
+            console.log(`Before filtering: ${flat.length} cases:`, flat.map(f => f.title));
+            
+            // Final filtering to remove duplicates - use normalized comparison
+            const seenTitles = new Set();
+            const finalFlat = [];
+            
+            flat.forEach(item => {
+                const normalizedTitle = (item.title || '').trim().toLowerCase();
+                console.log(`Checking normalized title: "${normalizedTitle}"`);
+                
+                if (!seenTitles.has(normalizedTitle)) {
+                    console.log(`Adding unique case: "${item.title}"`);
+                    seenTitles.add(normalizedTitle);
+                    finalFlat.push(item);
+                } else {
+                    console.log(`Removing duplicate case: "${item.title}"`);
+                }
+            });
+            
+            console.log(`After filtering: ${finalFlat.length} cases:`, finalFlat.map(f => f.title));
+            return finalFlat;
         }
 
         async function generateCvPdf() {
