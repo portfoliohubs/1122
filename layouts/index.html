@@ -1535,13 +1535,14 @@
             const flat = [];
             const casesRaw = cvData.clinicalCases;
             const cases = Array.isArray(casesRaw) ? casesRaw : [];
+            
+            // Track unique titles across ALL categories to avoid duplicates
+            const seenTitles = new Set();
+            
             cases.forEach(cat => {
                 if (cat && cat.enabled === false) return;
                 const categoryTitle = pickLangValue(cat.category || '', cat.category_ar || '');
                 const catCases = Array.isArray(cat.cases) ? cat.cases : [];
-                
-                // Track unique titles to avoid duplicates
-                const seenTitles = new Set();
                 
                 catCases.forEach(c => {
                     const title = pickLangValue(c.alt || '', c.alt_ar || '');
