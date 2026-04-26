@@ -1647,12 +1647,14 @@
                 const pageContent = [];
                 
                 if (caseImage) {
-                    // Add image centered and large
+                    // Add image with smart sizing to prevent full-page issues
                     pageContent.push({
                         image: caseImage,
-                        width: 350,
+                        width: 300,
                         alignment: 'center',
-                        margin: [0, 40, 0, 30]
+                        margin: [0, 30, 0, 20],
+                        // Prevent image from taking too much vertical space
+                        fit: [300, 250] // Max width 300px, max height 250px
                     });
                 }
                 
