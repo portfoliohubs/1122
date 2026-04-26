@@ -1539,17 +1539,24 @@
             // Track unique titles across ALL categories to avoid duplicates
             const seenTitles = new Set();
             
+            console.log('Processing clinical cases...');
+            
             cases.forEach(cat => {
                 if (cat && cat.enabled === false) return;
                 const categoryTitle = pickLangValue(cat.category || '', cat.category_ar || '');
                 const catCases = Array.isArray(cat.cases) ? cat.cases : [];
                 
+                console.log(`Category: ${categoryTitle}, Cases count: ${catCases.length}`);
+                
                 catCases.forEach(c => {
                     const title = pickLangValue(c.alt || '', c.alt_ar || '');
                     const description = pickLangValue(c.description || '', c.description_ar || '');
                     
+                    console.log(`Processing case: "${title}"`);
+                    
                     // Only add if we haven't seen this title before
                     if (!seenTitles.has(title)) {
+                        console.log(`Adding new case: "${title}"`);
                         seenTitles.add(title);
                         
                         flat.push({
@@ -1558,9 +1565,13 @@
                             title: title,
                             description: description
                         });
+                    } else {
+                        console.log(`Skipping duplicate case: "${title}"`);
                     }
                 });
             });
+            
+            console.log(`Final flat list has ${flat.length} cases:`, flat.map(f => f.title));
             return flat;
         }
 
