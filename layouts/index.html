@@ -1626,8 +1626,22 @@
 
                 const textParts = [];
                 if (item.categoryTitle) textParts.push({ text: item.categoryTitle, bold: true, fontSize: 16, alignment: 'center' });
+                
+                // Add title if it exists
                 if (item.title) textParts.push({ text: item.title, bold: true, fontSize: 14, alignment: 'center', margin: [0, 8, 0, 0] });
-                if (item.description) textParts.push({ text: item.description, fontSize: 12, alignment: 'center', margin: [0, 12, 0, 0] });
+                
+                // Add description only if it's different from title (prevent duplicates)
+                if (item.description) {
+                    const normalizedTitle = (item.title || '').trim().toLowerCase();
+                    const normalizedDescription = (item.description || '').trim().toLowerCase();
+                    
+                    if (normalizedDescription !== normalizedTitle) {
+                        textParts.push({ text: item.description, fontSize: 12, alignment: 'center', margin: [0, 12, 0, 0] });
+                    } else {
+                        console.log(`Skipping duplicate description: "${item.description}" (same as title)`);
+                    }
+                }
+                
                 if (!caseImage && item.photo) textParts.push({ text: item.photo, color: '#2563eb', fontSize: 9, alignment: 'center' });
 
                 const pageContent = [];
