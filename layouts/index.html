@@ -1540,28 +1540,24 @@
                 const categoryTitle = pickLangValue(cat.category || '', cat.category_ar || '');
                 const catCases = Array.isArray(cat.cases) ? cat.cases : [];
                 
-                // Track titles to add numbering for duplicates
-                const titleCounts = {};
+                // Track unique titles to avoid duplicates
+                const seenTitles = new Set();
                 
                 catCases.forEach(c => {
                     const title = pickLangValue(c.alt || '', c.alt_ar || '');
                     const description = pickLangValue(c.description || '', c.description_ar || '');
                     
-                    // Count occurrences of this title
-                    titleCounts[title] = (titleCounts[title] || 0) + 1;
-                    
-                    // If this title appears multiple times, add case number
-                    let finalTitle = title;
-                    if (titleCounts[title] > 1) {
-                        finalTitle = `${title} (Case ${titleCounts[title]})`;
+                    // Only add if we haven't seen this title before
+                    if (!seenTitles.has(title)) {
+                        seenTitles.add(title);
+                        
+                        flat.push({
+                            categoryTitle,
+                            photo: c.photo || '',
+                            title: title,
+                            description: description
+                        });
                     }
-                    
-                    flat.push({
-                        categoryTitle,
-                        photo: c.photo || '',
-                        title: finalTitle,
-                        description: description
-                    });
                 });
             });
             return flat;
